@@ -276,14 +276,14 @@ namespace PhpVersionManager
         // active la version choisie
         public static async Task setActiveVersion (string newActiveVersion) 
         {
-            if (!IsAdministrator())
-            {
-                Console.WriteLine("");
-                Console.WriteLine("Activation IMPOSSIBLE du to lack of ADMIN PRIVILEGES...");
-                Console.WriteLine("Please open your terminal WITH administrator privileges.");
-                Console.WriteLine("");
-                return;
-            }
+            //if (!IsAdministrator())
+            //{
+            //    Console.WriteLine("");
+            //    Console.WriteLine("Activation IMPOSSIBLE du to lack of ADMIN PRIVILEGES...");
+            //    Console.WriteLine("Please open your terminal WITH administrator privileges.");
+            //    Console.WriteLine("");
+            //    return;
+            //}
 
             newActiveVersion = newActiveVersion.Trim();
 
@@ -304,7 +304,7 @@ namespace PhpVersionManager
             }
 
             updatePathEnvVariable(newActiveVersion, envPathFinal, "user");
-            updatePathEnvVariable(newActiveVersion, envPathFinal, "machine");
+            //updatePathEnvVariable(newActiveVersion, envPathFinal, "machine");
 
             try
             {
