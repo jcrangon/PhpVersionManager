@@ -29,6 +29,7 @@ namespace PhpVersionManager
             string appDataLocalFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string phpVersionsFolder = Path.Combine(appDataLocalFolder, "PhpVersions/" + version);
             string destinationPath = Path.Combine(phpVersionsFolder, version + ".zip");
+            string phpIni = Path.Combine(phpVersionsFolder, "php.ini-development");
 
             try
             {
@@ -76,6 +77,9 @@ namespace PhpVersionManager
                             try
                             {
                                 ZipFile.ExtractToDirectory(destinationPath, phpVersionsFolder);
+                                if(File.Exists(phpIni)) {
+                                    File.Move(phpIni, Path.Combine(phpVersionsFolder, "php.ini"));
+                                }
                                 Console.Write("done!");
                                 Console.WriteLine("");
                                 Console.WriteLine("Enter command: 'pvm use " + version + "' to activate that PHP version on your system.");

@@ -57,9 +57,26 @@ namespace PhpVersionManager
                         }
                         break;
 
+                    case "display":
+                        if (args[1].Length != 0 && args[1] == "ini")
+                        {
+                            Console.WriteLine("");
+                            string version = args[1];
+                            Console.WriteLine($"Displaying php.ini...");
+                            await Utils.DisplayIni();
+                        }
+                        break;
+
                     case "-help":
                         Console.WriteLine("");
-                        Console.WriteLine("Printing PVM help:");
+                        Console.WriteLine("Printing PVM help...");
+                        Utils.DisplayHelp();
+                        break;
+
+                    case "-h":
+                        Console.WriteLine("");
+                        Console.WriteLine("Printing PVM help...");
+                        Utils.DisplayHelp();
                         break;
                 }
             }

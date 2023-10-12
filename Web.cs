@@ -33,11 +33,15 @@ namespace PhpVersionManager
             if (nodes != null)
             {
                 Console.WriteLine("Quelle version majeure de PHP recherchez vous ? [5, 7, 8, ...] ? [Appuyez sur ENTER pour afficher toutes les versions disponibles] ");
-                string v = Console.ReadLine();
+                Console.Write("Votre choix....");
+                string answer = "";
+                var keyInfo = Console.ReadKey(intercept: true);
+                answer += keyInfo.KeyChar;
+                Console.WriteLine($"[{answer}]");
 
                 // Utilisez LINQ pour filtrer les liens qui correspondent à vos critères
                 var downloadNtsX86Links = nodes
-                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + v)
+                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + answer)
                                 && node.GetAttributeValue("href", "").Contains("-nts")
                                 && node.GetAttributeValue("href", "").Contains("x86")
                                 && !node.GetAttributeValue("href", "").Contains("debug")
@@ -46,7 +50,7 @@ namespace PhpVersionManager
                     .Select(node => node.GetAttributeValue("href", ""));
 
                 var downloadTsX86Links = nodes
-                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + v)
+                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + answer)
                                 && node.GetAttributeValue("href", "").Contains("x86")
                                 && !node.GetAttributeValue("href", "").Contains("-nts")
                                 && !node.GetAttributeValue("href", "").Contains("test")
@@ -57,7 +61,7 @@ namespace PhpVersionManager
                     .Select(node => node.GetAttributeValue("href", ""));
 
                 var downloadNtsX64Links = nodes
-                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + v)
+                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + answer)
                                 && node.GetAttributeValue("href", "").Contains("-nts")
                                 && node.GetAttributeValue("href", "").Contains("x64")
                                 && !node.GetAttributeValue("href", "").Contains("debug")
@@ -66,7 +70,7 @@ namespace PhpVersionManager
                     .Select(node => node.GetAttributeValue("href", ""));
 
                 var downloadTsX64Links = nodes
-                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + v)
+                    .Where(node => node.GetAttributeValue("href", "").Contains("php-" + answer)
                                 && node.GetAttributeValue("href", "").Contains("x64")
                                 && !node.GetAttributeValue("href", "").Contains("-nts")
                                 && !node.GetAttributeValue("href", "").Contains("test")

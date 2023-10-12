@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -214,9 +216,9 @@ namespace PhpVersionManager
                 // On join les chemins restants pour former la nouvelle valeur de PATH
                 string newEnvPath = string.Join(";", newPaths);
 
-                
+
                 // Mettez à jour la variable d'environnement PATH
-                if(user == "user")
+                if (user == "user")
                 {
                     try
                     {
@@ -225,37 +227,38 @@ namespace PhpVersionManager
                         Environment.SetEnvironmentVariable("PATH", newEnvPath, EnvironmentVariableTarget.User);
                         Console.WriteLine("");
                         Console.WriteLine("PHP successfully installed for current user!");
-                        if(!IsAdministrator())
-                        {
-                            Console.WriteLine("");
-                            Console.WriteLine("PHP could not be installed at system level though.");
-                            Console.WriteLine("To install at system level open the terminal with administrator privileges...");
-                        }
-                    } catch (Exception e)
+                        //if (!IsAdministrator())
+                        //{
+                        //    Console.WriteLine("");
+                        //    Console.WriteLine("PHP could not be installed at system level though.");
+                        //    Console.WriteLine("To install at system level open the terminal with administrator privileges...");
+                        //}
+                    }
+                    catch (Exception e)
                     {
                         Console.WriteLine("");
                         Console.WriteLine("Error! PHP could not be installed!");
                         Console.WriteLine("");
                     }
-                    
-                } else if (user == "machine" && IsAdministrator())
-                {
-                    try
-                    {
-                        // on place le chemin en tete
-                        newEnvPath = envPathFinal + ";" + newEnvPath;
-                        Environment.SetEnvironmentVariable("PATH", newEnvPath, EnvironmentVariableTarget.Machine);
-                        Console.WriteLine("");
-                        Console.WriteLine("PHP successfully installed at system level!");
-                        Console.WriteLine("");
-                    } catch (Exception e) 
-                    {
-                        Console.WriteLine("");
-                        Console.WriteLine("Error! Your terminal must have administrator privileges to install PHP at system level...");
-                        Console.WriteLine("");
-                    }
-                    
                 }
+                // else if (user == "machine" && IsAdministrator())
+                //{
+                //    try
+                //    {
+                //        // on place le chemin en tete
+                //        newEnvPath = envPathFinal + ";" + newEnvPath;
+                //        Environment.SetEnvironmentVariable("PATH", newEnvPath, EnvironmentVariableTarget.Machine);
+                //        Console.WriteLine("");
+                //        Console.WriteLine("PHP successfully installed at system level!");
+                //        Console.WriteLine("");
+                //    } catch (Exception e) 
+                //    {
+                //        Console.WriteLine("");
+                //        Console.WriteLine("Error! Your terminal must have administrator privileges to install PHP at system level...");
+                //        Console.WriteLine("");
+                //    }
+                    
+                //}
                 
             }
             else
@@ -374,9 +377,133 @@ namespace PhpVersionManager
             }
         }
 
-        public static void displayHelp()
+        public static void DisplayHelp()
         {
+            Console.WriteLine("   list available     - List available PHP versions");
+            Console.WriteLine("   ls                 - List installed versions of PHP");
+            Console.WriteLine("   install [version]  - Installs the chosen PHP [version]");
+            Console.WriteLine("   use [version]      - Activates the chosen PHP [version]");
+            Console.WriteLine("   remove [version]   - Removes the chosen PHP [version]");
+            Console.WriteLine("   display ini        - Displays the php.ini of the installed version");
             Console.WriteLine("");
+            Console.WriteLine("");
+        }
+
+        public static async Task DisplayIni()
+        {
+            Dictionary<string, string> paths = GetFolderPaths();
+            string versionName;
+            string pathToVersion;
+            string file = paths["activeVersionFile"];
+
+            if (File.Exists(file))
+            {
+                try
+                {
+                    versionName = await File.ReadAllTextAsync(file);
+                    if (versionName != "")
+                    {
+                        pathToVersion = Path.Combine(paths["phpVersionsFolder"], versionName);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Aucune version de PHP n'est activée sur votre système. Activez-en une!");
+                        return;
+                    }
+
+                    Console.WriteLine(pathToVersion);
+
+                    string answer = "";
+                    Console.WriteLine("Choose what editor you want to use:");
+                    Console.WriteLine("Note pad    [1]");
+                    Console.WriteLine("Notepad++   [2]");
+                    Console.WriteLine("VSCode      [3]");
+                    Console.Write("Votre choix....");
+                    var keyInfo = Console.ReadKey(intercept: true);
+                    answer += keyInfo.KeyChar;
+
+                    switch (answer)
+                    {
+                        case "1":
+                            Console.WriteLine($"[{answer}]");
+                            Console.WriteLine("Opening with notepad ...");
+                            try
+                            {
+                                Process.Start("notepad.exe", Path.Combine(pathToVersion, "php.ini"));
+                            } catch 
+                            {
+                                Console.WriteLine("Unable to find notepad.exe on your system. Please check if it is installed in PATH for current user");
+                            }
+                            
+                            break;
+
+                        case "2":
+                            Console.WriteLine($"[{answer}]");
+                            Console.WriteLine("Opening with notepad++ ...");
+                            try
+                            {
+                                var pi = new ProcessStartInfo
+                                {
+                                    UseShellExecute = true,
+                                    FileName = "notepad++",
+                                    Arguments = Path.Combine(pathToVersion, "php.ini"),
+                                    WindowStyle = ProcessWindowStyle.Hidden
+                                };
+                                Process.Start(pi);
+                            }
+                            catch 
+                            {
+                                try
+                                {
+                                    Console.WriteLine("Unable to find notepad++.exe on your system. Opening php.ini with NotePad");
+                                    Process.Start("notepad.exe", Path.Combine(pathToVersion, "php.ini"));
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("Unable to find notepad.exe on your system. Please check if it is installed in PATH for current user");
+                                }
+
+                            }
+                            break;
+
+                        case "3":
+                            Console.WriteLine($"[{answer}]");
+                            Console.WriteLine("Opening with VSCode ...");
+                            try
+                            {
+                                var pi = new ProcessStartInfo
+                                {
+                                    UseShellExecute = true,
+                                    FileName = "code",
+                                    Arguments = Path.Combine(pathToVersion, "php.ini"),
+                                    WindowStyle = ProcessWindowStyle.Hidden
+                                };
+                                Process.Start(pi);
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    Console.WriteLine("Unable to find code.exe on your system. Opening php.ini with NotePad");
+                                    Process.Start("notepad.exe", Path.Combine(pathToVersion, "php.ini"));
+                                } catch 
+                                {
+                                    Console.WriteLine("Unable to find notepad.exe on your system. Please check if it is installed in PATH for current user");
+                                } 
+                                
+                            }
+                            break;
+
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Une erreur est survenue: " + e.Message);
+                }
+
+            }
+
         }
     }
 }
