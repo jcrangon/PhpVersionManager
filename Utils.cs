@@ -234,7 +234,7 @@ namespace PhpVersionManager
                         //    Console.WriteLine("To install at system level open the terminal with administrator privileges...");
                         //}
                     }
-                    catch (Exception e)
+                    catch
                     {
                         Console.WriteLine("");
                         Console.WriteLine("Error! PHP could not be installed!");
