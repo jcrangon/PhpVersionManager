@@ -137,7 +137,7 @@ namespace PhpVersionManager
             else
             {
                 Console.WriteLine("");
-                Console.WriteLine("Le dossier PhpVersions n'existe pas.");
+                Console.WriteLine("No PHP versions installed!");
                 Console.WriteLine("");
             }
         }
@@ -207,9 +207,9 @@ namespace PhpVersionManager
 
                 if (pathExists)
                 {
-                    Console.WriteLine("");
-                    Console.WriteLine($"PHP version {newActiveVersion} id already activated for {(user == "user" ? "User" : "Systeme")}!");
-                    Console.WriteLine("");
+                    // Console.WriteLine("");
+                    // Console.WriteLine($"PHP version {newActiveVersion} id already activated for {(user == "user" ? "User" : "Systeme")}!");
+                    // Console.WriteLine("");
                     return;
                 }
 
@@ -371,6 +371,7 @@ namespace PhpVersionManager
 
             } else
             {
+
                 Console.WriteLine("Le dossier PhpVersions n'existe pas.");
                 Console.WriteLine("... Done!");
                 Console.WriteLine("");
@@ -407,7 +408,10 @@ namespace PhpVersionManager
                     }
                     else
                     {
-                        Console.WriteLine("Aucune version de PHP n'est activée sur votre système. Activez-en une!");
+                        Console.WriteLine("No PHP is activated on your system. Please activate a version of PHP");
+                        Console.WriteLine("PHP version(s installed on your system:");
+                        await ListVersions();
+                        Console.WriteLine("Enter command: 'use [version]' to activate a version of PHP");
                         return;
                     }
 
@@ -484,7 +488,7 @@ namespace PhpVersionManager
                             {
                                 try
                                 {
-                                    Console.WriteLine("Unable to find code.exe on your system. Opening php.ini with NotePad");
+                                    Console.WriteLine("Unable to find code.exe on your system. Opening php.ini with NotePad...");
                                     Process.Start("notepad.exe", Path.Combine(pathToVersion, "php.ini"));
                                 } catch 
                                 {
@@ -499,10 +503,16 @@ namespace PhpVersionManager
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Une erreur est survenue: " + e.Message);
-                }
+                    Console.WriteLine("ERROR: " + e.Message);
+                } 
 
             }
+            else
+            {
+                Console.WriteLine("");
+                Console.WriteLine("WARNING: Please Activate a version of PHP first!");
+                Console.WriteLine("Enter command: 'use [version]' to activate a version of PHP");
+            } 
 
         }
     }
